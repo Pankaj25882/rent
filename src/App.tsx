@@ -8,7 +8,7 @@ import { MaintenanceView } from './components/MaintenanceView';
 import { FlatsDirectoryView } from './components/FlatsDirectoryView';
 import { BuildingExpensesView } from './components/BuildingExpensesView';
 import { BatchMeterEntryModal } from './components/BatchMeterEntryModal';
-import { AddElectricityModal } from './components/AddElectricityModal';
+import { AddRentModal } from './components/AddRentModal';
 import { PaymentModal } from './components/PaymentModal';
 import { InvoiceModal } from './components/InvoiceModal';
 import { NewTicketModal } from './components/NewTicketModal';
@@ -18,21 +18,21 @@ import { FlatMonthlyStatement } from './types';
 const MainAppContent: React.FC = () => {
   const { buildings, selectedBuildingId } = useProperty();
 
-  const [activeTab, setActiveTab] = useState<ActiveTab>('billing'); // Open directly on the core user request (Electricity & Billing)
+  const [activeTab, setActiveTab] = useState<ActiveTab>('billing'); // Open directly on the core user request (Rent Ledger)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isBatchMeterOpen, setIsBatchMeterOpen] = useState(false);
   const [isNewTicketOpen, setIsNewTicketOpen] = useState(false);
-  const [isAddElectricityOpen, setIsAddElectricityOpen] = useState(false);
-  const [selectedElectricityStatement, setSelectedElectricityStatement] = useState<FlatMonthlyStatement | null>(null);
+  const [isAddRentOpen, setIsAddRentOpen] = useState(false);
+  const [selectedRentStatement, setSelectedRentStatement] = useState<FlatMonthlyStatement | null>(null);
 
   const [selectedInvoiceStatement, setSelectedInvoiceStatement] = useState<FlatMonthlyStatement | null>(null);
   const [selectedPaymentStatement, setSelectedPaymentStatement] = useState<FlatMonthlyStatement | null>(null);
 
   const activeBuilding = buildings.find(b => b.id === (selectedInvoiceStatement?.buildingId || selectedBuildingId));
 
-  const handleOpenAddElectricity = (stmt?: FlatMonthlyStatement) => {
-    setSelectedElectricityStatement(stmt || null);
-    setIsAddElectricityOpen(true);
+  const handleOpenAddRent = (stmt?: FlatMonthlyStatement) => {
+    setSelectedRentStatement(stmt || null);
+    setIsAddRentOpen(true);
   };
 
   return (
@@ -43,7 +43,7 @@ const MainAppContent: React.FC = () => {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenBatchReadings={() => setIsBatchMeterOpen(true)}
         onOpenNewTicket={() => setIsNewTicketOpen(true)}
-        onOpenAddElectricity={() => handleOpenAddElectricity()}
+        onOpenAddRent={() => handleOpenAddRent()}
       />
 
       {/* Main Layout Body */}
@@ -54,7 +54,7 @@ const MainAppContent: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           openBatchReadings={() => setIsBatchMeterOpen(true)}
-          onOpenAddElectricity={() => handleOpenAddElectricity()}
+          onOpenAddRent={() => handleOpenAddRent()}
         />
 
         {/* Content Viewport */}
@@ -72,7 +72,7 @@ const MainAppContent: React.FC = () => {
               onSelectStatementForInvoice={(stmt) => setSelectedInvoiceStatement(stmt)}
               onSelectStatementForPayment={(stmt) => setSelectedPaymentStatement(stmt)}
               onOpenBatchReadings={() => setIsBatchMeterOpen(true)}
-              onOpenAddElectricity={(stmt) => handleOpenAddElectricity(stmt)}
+              onOpenAddRent={(stmt) => handleOpenAddRent(stmt)}
             />
           )}
 
@@ -93,13 +93,13 @@ const MainAppContent: React.FC = () => {
       </div>
 
       {/* Global Modals */}
-      <AddElectricityModal
-        isOpen={isAddElectricityOpen}
+      <AddRentModal
+        isOpen={isAddRentOpen}
         onClose={() => {
-          setIsAddElectricityOpen(false);
-          setSelectedElectricityStatement(null);
+          setIsAddRentOpen(false);
+          setSelectedRentStatement(null);
         }}
-        preSelectedStatement={selectedElectricityStatement}
+        preSelectedStatement={selectedRentStatement}
       />
 
       <BatchMeterEntryModal

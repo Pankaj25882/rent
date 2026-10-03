@@ -8,7 +8,8 @@ import {
   Zap, 
   Building2,
   ShieldCheck,
-  CreditCard
+  CreditCard,
+  Receipt
 } from 'lucide-react';
 import { useProperty } from '../context/PropertyContext';
 
@@ -18,14 +19,14 @@ interface SidebarProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   openBatchReadings: () => void;
-  onOpenAddElectricity?: () => void;
+  onOpenAddRent?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   activeTab, 
   setActiveTab,
   openBatchReadings,
-  onOpenAddElectricity
+  onOpenAddRent
 }) => {
   const { statements, buildingExpenses, maintenanceRequests, buildings, selectedBuildingId, selectedMonth } = useProperty();
 
@@ -56,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'billing',
-      label: 'Flat Rent & Electricity',
+      label: 'Rent Ledger',
       icon: <ReceiptText className="w-4 h-4" />,
       badge: pendingPaymentsCount > 0 ? `${pendingPaymentsCount} Due` : undefined,
       badgeColor: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
@@ -131,13 +132,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             Record end-of-month meter readings for all 40+ flats in one rapid spreadsheet view.
           </p>
           <div className="space-y-1.5 pt-1">
-            {onOpenAddElectricity && (
+            {onOpenAddRent && (
               <button
-                onClick={onOpenAddElectricity}
+                onClick={onOpenAddRent}
                 className="w-full py-1.5 px-2.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-neutral-950 font-bold text-xs transition-colors cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-xs"
               >
-                <Zap className="w-3.5 h-3.5 fill-neutral-950" />
-                <span>+ Add Electricity Reading</span>
+                <Receipt className="w-3.5 h-3.5 text-neutral-950" />
+                <span>+ Add Rent</span>
               </button>
             )}
             <button

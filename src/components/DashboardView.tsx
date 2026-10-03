@@ -112,7 +112,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => onNavigateTab('billing')}
               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer"
             >
-              Open Flat Rent & Electricity Ledger
+              Open Rent Ledger
             </button>
             <button
               onClick={() => onNavigateTab('expenses')}

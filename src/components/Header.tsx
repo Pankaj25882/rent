@@ -8,21 +8,22 @@ import {
   PlusCircle, 
   Settings as SettingsIcon,
   Zap,
-  Wrench
+  Wrench,
+  Receipt
 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSettings: () => void;
   onOpenBatchReadings: () => void;
   onOpenNewTicket: () => void;
-  onOpenAddElectricity: () => void;
+  onOpenAddRent: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onOpenBatchReadings,
   onOpenNewTicket,
-  onOpenAddElectricity,
+  onOpenAddRent,
 }) => {
   const { 
     buildings, 
@@ -116,12 +117,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Zone 3: Actions */}
         <div className="flex items-center gap-2 w-full md:w-auto justify-end">
           <button
-            onClick={onOpenAddElectricity}
+            onClick={onOpenAddRent}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-neutral-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm transition-colors whitespace-nowrap cursor-pointer"
-            title="Add or record monthly electricity meter reading for a flat"
+            title="Add rent, electricity meter readings, and balance for a flat"
           >
-            <Zap className="w-3.5 h-3.5 fill-neutral-950" />
-            <span>+ Add Electricity</span>
+            <Receipt className="w-3.5 h-3.5 text-neutral-950" />
+            <span>+ Add Rent</span>
           </button>
 
           <button

@@ -23,14 +23,14 @@ interface ElectricityBillingViewProps {
   onSelectStatementForInvoice: (statement: FlatMonthlyStatement) => void;
   onSelectStatementForPayment: (statement: FlatMonthlyStatement) => void;
   onOpenBatchReadings: () => void;
-  onOpenAddElectricity: (statement?: FlatMonthlyStatement) => void;
+  onOpenAddRent: (statement?: FlatMonthlyStatement) => void;
 }
 
 export const ElectricityBillingView: React.FC<ElectricityBillingViewProps> = ({
   onSelectStatementForInvoice,
   onSelectStatementForPayment,
   onOpenBatchReadings,
-  onOpenAddElectricity,
+  onOpenAddRent,
 }) => {
   const { 
     statements, 
@@ -186,27 +186,27 @@ export const ElectricityBillingView: React.FC<ElectricityBillingViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <span>Electricity Readings & Resident Billing Ledger</span>
+            <span>RENT LEDGER</span>
             <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-normal">
               {filteredStatements.length} Active Records
             </span>
           </h1>
           <p className="text-xs text-neutral-400 mt-1">
-            Automated electricity usage tracking, monthly start/end meter auditing, base rent, previous balance carryover, and payment reconciliation.
+            Automated electricity usage tracking, monthly start/end meter auditing, rent, last month balance carryover, payment, and net balance reconciliation.
           </p>
         </div>
 
         {/* Primary Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           
-          {/* Main "Add Electricity Reading" button explicitly highlighted */}
+          {/* Main "Add Rent" button explicitly highlighted */}
           <button
-            onClick={() => onOpenAddElectricity()}
+            onClick={() => onOpenAddRent()}
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-neutral-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-md transition-all cursor-pointer ring-2 ring-amber-400/30"
-            title="Add or update electricity meter readings for any apartment"
+            title="Add rent, electricity meter readings, and balance for any apartment"
           >
-            <Zap className="w-4 h-4 fill-neutral-950" />
-            <span>+ Add Electricity Reading</span>
+            <Receipt className="w-4 h-4 text-neutral-950" />
+            <span>+ Add Rent</span>
           </button>
 
           <button
@@ -497,9 +497,9 @@ export const ElectricityBillingView: React.FC<ElectricityBillingViewProps> = ({
                           />
                         ) : (
                           <button
-                            onClick={() => onOpenAddElectricity(stmt)}
+                            onClick={() => onOpenAddRent(stmt)}
                             className="inline-flex items-center gap-1 group text-amber-300 hover:text-amber-200 cursor-pointer"
-                            title="Click to add/update electricity meter reading"
+                            title="Click to add/update rent & electricity"
                           >
                             <span>{stmt.endReading.toLocaleString()}</span>
                             <Edit3 className="w-3 h-3 text-neutral-500 group-hover:text-amber-400" />
@@ -623,14 +623,14 @@ export const ElectricityBillingView: React.FC<ElectricityBillingViewProps> = ({
                         ) : (
                           <div className="flex items-center justify-center gap-1.5">
                             
-                            {/* Explicit "Add / Edit Electricity" button on every row */}
+                            {/* Explicit "Add / Edit Rent" button on every row */}
                             <button
-                              onClick={() => onOpenAddElectricity(stmt)}
+                              onClick={() => onOpenAddRent(stmt)}
                               className="flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-700/50 rounded transition-colors cursor-pointer"
-                              title="Add / Update Electricity Reading for this Flat"
+                              title="Add / Update Monthly Rent & Electricity for this Flat"
                             >
-                              <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
-                              <span>Add Reading</span>
+                              <Receipt className="w-3 h-3 text-amber-400" />
+                              <span>Add Rent</span>
                             </button>
 
                             {/* Record Payment Button */}

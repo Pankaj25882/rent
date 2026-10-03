@@ -31,6 +31,15 @@ interface PropertyContextType {
   // Electricity & Billing Actions
   updateElectricityReading: (statementId: string, startReading: number, endReading: number) => void;
   batchUpdateReadings: (updates: { statementId: string; endReading: number; startReading?: number }[]) => void;
+  upsertRentStatement: (data: {
+    flatId: string;
+    month: string;
+    baseRent: number;
+    startReading: number;
+    endReading: number;
+    lastMonthBalance: number;
+    paymentReceived: number;
+  }) => void;
   recordPayment: (
     statementId: string, 
     amount: number, 
@@ -219,6 +228,106 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
       return stmt;
     }));
+  };
+
+  // Create or Update a Rent Statement for a flat and month
+  const upsertRentStatement = (data: {
+    flatId: string;
+    month: string;
+    baseRent: number;
+    startReading: number;
+    endReading: number;
+    lastMonthBalance: number;
+    paymentReceived: number;
+  }) => {
+    setStatements(prev => {
+      const existingIdx = prev.findIndex(s => s.flatId === data.flatId && s.month === data.month);
+      const flat = flats.find(f => f.id === data.flatId);
+      const building = buildings.find(b => b.id === (flat?.buildingId || ''));
+      const buildingName = building?.name || 'Apartment Complex';
+      const flatNumber = flat?.flatNumber || '101';
+      const tenantName = flat?.tenantName || 'Resident';
+      const tenantPhone = flat?.tenantPhone || '';
+      const tenantEmail = flat?.tenantEmail || '';
+      const meterNumber = flat?.meterNumber || 'MTR-101';
+      const ratePerUnit = building?.electricityRatePerUnit || 9.0;
+      const fixedUtilityCharge = building?.fixedMeterCharge || 100;
+
+      const totalReading = Math.max(0, Number((data.endReading - data.startReading).toFixed(2)));
+      const electricityAmount = Number((totalReading * ratePerUnit + fixedUtilityCharge).toFixed(2));
+      const totalDue = Number((data.baseRent + electricityAmount + data.lastMonthBalance).toFixed(2));
+      const balanceThisMonth = Number((totalDue - data.paymentReceived).toFixed(2));
+
+      let status: 'PAID' | 'PARTIAL' | 'UNPAID' | 'OVERDUE' = 'UNPAID';
+      if (balanceThisMonth <= 0) {
+        status = 'PAID';
+      } else if (data.paymentReceived > 0) {
+        status = 'PARTIAL';
+      } else if (data.lastMonthBalance > 0) {
+        status = 'OVERDUE';
+      } else {
+        status = 'UNPAID';
+      }
+
+      if (existingIdx >= 0) {
+        const existing = prev[existingIdx];
+        const updated: FlatMonthlyStatement = {
+          ...existing,
+          baseRent: data.baseRent,
+          startReading: data.startReading,
+          endReading: data.endReading,
+          totalReading,
+          ratePerUnit,
+          fixedUtilityCharge,
+          electricityAmount,
+          lastMonthBalance: data.lastMonthBalance,
+          totalDue,
+          paymentReceived: data.paymentReceived,
+          balanceThisMonth,
+          status,
+        };
+        const next = [...prev];
+        next[existingIdx] = updated;
+        return next;
+      } else {
+        const newStmt: FlatMonthlyStatement = {
+          id: `stmt-${data.flatId}-${data.month}-${Date.now()}`,
+          flatId: data.flatId,
+          buildingId: flat?.buildingId || buildings[0]?.id || '',
+          month: data.month,
+          buildingName,
+          flatNumber,
+          tenantName,
+          tenantPhone,
+          tenantEmail,
+          meterNumber,
+          baseRent: data.baseRent,
+          lastMonthBalance: data.lastMonthBalance,
+          startReading: data.startReading,
+          endReading: data.endReading,
+          totalReading,
+          ratePerUnit,
+          fixedUtilityCharge,
+          electricityAmount,
+          totalDue,
+          paymentReceived: data.paymentReceived,
+          balanceThisMonth,
+          status,
+          payments: data.paymentReceived > 0 ? [{
+            id: `pay-${Date.now()}`,
+            flatId: data.flatId,
+            buildingId: flat?.buildingId || '',
+            month: data.month,
+            amount: data.paymentReceived,
+            date: new Date().toISOString().split('T')[0],
+            method: 'BANK_TRANSFER',
+            referenceNo: `REC-${Date.now().toString().slice(-6)}`,
+            note: 'Initial monthly payment entry'
+          }] : [],
+        };
+        return [newStmt, ...prev];
+      }
+    });
   };
 
   // Record a payment receipt
@@ -603,6 +712,7 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setSelectedMonth,
       updateElectricityReading,
       batchUpdateReadings,
+      upsertRentStatement,
       recordPayment,
       addBuildingExpense,
       updateBuildingExpense,
